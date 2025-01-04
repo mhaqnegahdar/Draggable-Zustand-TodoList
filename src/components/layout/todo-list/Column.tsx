@@ -1,39 +1,45 @@
-// Components
-import { useMemo } from "react";
+import React from "react";
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { useDroppable } from "@dnd-kit/core";
 import Card from "./Card";
-
-// Types
 import { CardProps, ColumnProps } from "@/types/props";
 
-export default function Column({ title, status }: ColumnProps) {
-  const cards: CardProps[] = [
-    {
-      id: "adfadf",
-      title: "title",
-      description: "description",
-      status: "TODO",
-    },
-    {
-      id: "adfccdd",
-      title: "title",
-      description: "description",
-      status: "IN PROGRESS",
-    },
-  ] as CardProps[];
+export default function Column({
+  title,
+  status,
+  cards,
+}: ColumnProps & { cards: CardProps[] }) {
+  const { setNodeRef, isOver } = useDroppable({
+    id: status, // Unique ID for this droppable
+  });
 
-  const filteredCards = useMemo(
-    () => cards.filter((card) => card.status === status),
-    [cards, status]
-  );
+  const isEmpty = cards.length === 0;
+
   return (
-    <div id={`${status}-column`}>
-      <h3 className="text-xl font-bold">{title}</h3>
-      <div className="h-[600px]">
-        <div className="rounded-xl bg-secondary h-full w-full p-4 space-y-4 ">
-          {filteredCards.map((card) => (
-            <Card key={card.id} {...card} />
-          ))}
-        </div>
+    <div
+      ref={setNodeRef} // Mark this column as droppable
+      id={`${status}-column`}
+      className={`border p-4 rounded-md  ${isOver ? "bg-gray-100" : ""}`}
+    >
+      <h3 className="text-xl font-bold mb-4">{title}</h3>
+      <div className="h-[600px] relative space-y-4">
+        <SortableContext
+          id={status}
+          items={cards.map((card) => card.id)} // Ensure SortableContext always has an ID
+          strategy={verticalListSortingStrategy}
+        >
+          {/* Placeholder for empty column */}
+          {isEmpty ? (
+            <div className="flex items-center justify-center h-full border-dashed border-2 border-gray-300 text-gray-500">
+              Drop items here
+            </div>
+          ) : (
+            cards.map((card) => <Card key={card.id} {...card} />)
+          )}
+        </SortableContext>
       </div>
     </div>
   );
