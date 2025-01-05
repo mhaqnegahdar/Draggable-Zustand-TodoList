@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import {
   DndContext,
   DragOverlay,
@@ -22,19 +22,14 @@ import CreateTodo from "@/components/layout/todo-list/CreateTodo";
 import { Popover } from "@/components/ui/popover";
 
 // Types
-import { ColumnProps, CardProps, Status } from "@/types/props";
+import { ColumnProps, Status } from "@/types/props";
+import { useTodoStore } from "@/store/todo-store";
 
 export default function TodoContainer() {
   // State
-  const [cards, setCards] = useState<CardProps[]>([
-    { id: "1", title: "Task 1", description: "Details", status: "TODO" },
-    { id: "2", title: "Task 2", description: "Details", status: "TODO" },
-    { id: "3", title: "Task 3", description: "Details", status: "IN PROGRESS" },
-    { id: "4", title: "Task 4", description: "Details", status: "DONE" },
-    { id: "5", title: "Task 5", description: "Details", status: "DONE" },
-    { id: "6", title: "Task 6", description: "Details", status: "DONE" },
-  ]);
-  const [activeId, setActiveId] = useState<string | null>(null);
+
+  const { todos, activeTodo, removeTodo, updateTodos, setActiveTodo } =
+    useTodoStore();
 
   // Constants
   const columns: ColumnProps[] = [
@@ -55,7 +50,7 @@ export default function TodoContainer() {
 
   // Handlers
   const handleDragStart = (event: DragStartEvent) => {
-    setActiveId(event.active.id.toString());
+    setActiveTodo(event.active.id.toString());
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -63,8 +58,8 @@ export default function TodoContainer() {
 
     if (!over) return;
 
-    const activeCard = cards.find((card) => card.id === active.id);
-    const overCard = cards.find((card) => card.id === over.id);
+    const activeCard = todos.find((card) => card.id === active.id);
+    const overCard = todos.find((card) => card.id === over.id);
 
     const overContainerStatus = overCard
       ? overCard.status
@@ -73,15 +68,14 @@ export default function TodoContainer() {
     if (!activeCard) return;
 
     if (activeCard.status !== overContainerStatus) {
-      setCards((prev) =>
-        prev.map((card) =>
-          card.id === active.id
-            ? { ...card, status: overContainerStatus }
-            : card
-        )
-      );
+      const updatedTodo = todos.map((card) => ({
+        ...card,
+        status: card.id === active.id ? overContainerStatus : card.status,
+      }));
+
+      updateTodos(updatedTodo);
     } else {
-      const columnCards = cards.filter(
+      const columnCards = todos.filter(
         (card) => card.status === activeCard.status
       );
       const oldIndex = columnCards.findIndex((card) => card.id === active.id);
@@ -89,18 +83,17 @@ export default function TodoContainer() {
 
       const updatedCards = arrayMove(columnCards, oldIndex, newIndex);
 
-      setCards((prev) =>
-        prev
-          .filter((card) => card.status !== activeCard.status)
-          .concat(updatedCards)
-      );
+      const reorderedTodos = todos
+        .filter((card) => card.status !== activeCard.status)
+        .concat(updatedCards);
+
+      updateTodos(reorderedTodos);
     }
-    setActiveId(null); // Reset active ID after drop
+    setActiveTodo(null); // Reset active ID after drop
   };
 
   const handleRemove = (id: string) => {
-    // Remove the item with the given ID from the state
-    setCards((prev) => prev.filter((card) => card.id !== id));
+    removeTodo(id);
   };
 
   return (
@@ -123,14 +116,14 @@ export default function TodoContainer() {
             <Column
               key={column.status}
               {...column}
-              cards={cards.filter((card) => card.status === column.status)}
+              cards={todos.filter((card) => card.status === column.status)}
             />
           ))}
 
           {/* Drag Overlay */}
           <DragOverlay>
-            {activeId ? (
-              <Card {...cards.find((card) => card.id === activeId)!} />
+            {activeTodo ? (
+              <Card {...todos.find((card) => card.id === activeTodo)!} />
             ) : null}
           </DragOverlay>
           {/* Remove Area */}

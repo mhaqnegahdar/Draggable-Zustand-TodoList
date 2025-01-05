@@ -1,9 +1,11 @@
 "use client";
 
 // Hooks / Packages
+import { useTodoStore } from "@/store/todo-store";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import * as uuid from "uuid";
 
 // Components
 import {
@@ -28,6 +30,7 @@ import { PlusCircle } from "lucide-react";
 
 export default function CreateTodo() {
   const { close } = usePopover();
+  const { addTodo } = useTodoStore();
 
   const createTodoFormSchema = z.object({
     title: z
@@ -50,8 +53,7 @@ export default function CreateTodo() {
 
   // 2. Define submit and reset handler.
   function onSubmit(values: createTodoFormType) {
-    console.log(values);
-
+    addTodo({ id: uuid.v4(), ...values, status: "TODO" });
     // Clear the form
     handleReset();
   }

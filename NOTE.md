@@ -18,3 +18,10 @@
 - Create New Task Form
 - Define the form values
 - Define Form handlers
+
+4. **Add Zustand store**:
+- Install `zustand` 
+- Create `todoStore` with `create` methods
+- Create functions needed
+- Add `persist` middleware to persist state in Local Storage
+- Connect `todoStore` to the components
