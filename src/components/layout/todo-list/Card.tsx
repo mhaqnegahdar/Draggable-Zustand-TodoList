@@ -8,15 +8,19 @@ import {
   CardTitle,
   CardHeader,
 } from "@/components/ui/card";
-import { TrashIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { CSS } from "@dnd-kit/utilities";
 import { CardProps } from "@/types/props";
 
 export default function Card({ id, title, description, status }: CardProps) {
-  const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id });
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -27,18 +31,13 @@ export default function Card({ id, title, description, status }: CardProps) {
     <CardContainer
       ref={setNodeRef}
       style={style}
+      className={cn(isDragging && "opacity-25")}
       {...attributes}
       {...listeners}
     >
       <CardHeader className="relative">
         <CardTitle>{title}</CardTitle>
         <CardDescription>{description}</CardDescription>
-        <Button
-          variant="link"
-          className="absolute top-2 right-2 hover:scale-x-125 "
-        >
-          <TrashIcon className="text-red-500 " />
-        </Button>
       </CardHeader>
       <CardFooter>
         <Badge

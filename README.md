@@ -11,7 +11,7 @@ Explore the [demo](https://draggable-zustand-todolist.vercel.app/) for better un
 - TSX, Tailwindcss,
 - TypeScript
 - **Nextjs v15**
-- **Packages:** Zustand, DND-Kit
+- **Packages:** Zustand, DND-Kit, react-hook-form, zod
 - **Routing:** using new app directory
 
 ## Features
@@ -19,6 +19,8 @@ Explore the [demo](https://draggable-zustand-todolist.vercel.app/) for better un
 - Store management using **Zustand**
 - **DND-Kit** for drag and drop
 - **Persistance** Middleware using **Zustand**
+- **Remove Area**  using **DND-Kit**
+- **Craete TODO Form**  using **react-hook-forms** & **zod**
 
 ## Installation
 

@@ -25,7 +25,7 @@ export default function Column({
       className={`border p-4 rounded-md  ${isOver ? "bg-gray-100" : ""}`}
     >
       <h3 className="text-xl font-bold mb-4">{title}</h3>
-      <div className="h-[600px] relative space-y-4">
+      <div className="h-[600px] relative space-y-4 overflow-x-auto">
         <SortableContext
           id={status}
           items={cards.map((card) => card.id)} // Ensure SortableContext always has an ID
